@@ -1,52 +1,43 @@
 class Solution {
-public:
-    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+private:
+    void dfs(int sr, int sc, vector<vector<int>>& ans, vector<vector<int>>& image, int color, int drow[], int dcol[], int start) {
+        ans[sr][sc] = color; // Fill the current pixel with the target color
+        
         int n = image.size();
         int m = image[0].size();
-        
-        // Get the original color at the starting point
-        int originalColor = image[sr][sc];
 
-        // If the original color is the same as the target color, no need to fill
-        if (originalColor == color) {
+        // Explore all 4 possible directions (up, right, down, left)
+        for (int i = 0; i < 4; i++) {
+            int nrow = sr + drow[i]; // New row
+            int ncol = sc + dcol[i]; // New column
+
+            // Check if the new position is within bounds and has the same color as the start
+            if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && image[nrow][ncol] == start && ans[nrow][ncol] != color) {
+                // Call dfs recursively with the new row and column
+                dfs(nrow, ncol, ans, image, color, drow, dcol, start);
+            }
+        }
+    }
+
+public:
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int color) {
+        int startColor = image[sr][sc]; // Store the color at the starting point
+
+        // If the target color is the same as the starting color, no need to do anything
+        if (startColor == color) {
             return image;
         }
 
-        // Create a visited vector to keep track of visited cells
-        vector<vector<bool>> visited(n, vector<bool>(m, false));
+        // Create a copy of the image to store the result
+        vector<vector<int>> ans = image;
         
-        // Directions for moving up, right, down, left
+        // Directions for moving in the 4 cardinal directions (up, right, down, left)
         int drow[] = {-1, 0, 1, 0};
         int dcol[] = {0, 1, 0, -1};
-
-        // Queue for BFS
-        queue<pair<int, int>> q;
-        q.push({sr, sc});
-        visited[sr][sc] = true; // Mark the starting point as visited
-
-        while (!q.empty()) {
-            int i = q.front().first;
-            int j = q.front().second;
-            q.pop();
-
-            // Only fill if the current pixel is the original color
-            if (image[i][j] == originalColor) {
-                image[i][j] = color;
-            }
-
-            // Check all 4 directions (up, right, down, left)
-            for (int k = 0; k < 4; k++) {
-                int row = i + drow[k];
-                int col = j + dcol[k];
-
-                // Check if the new position is valid, not visited, and has the original color
-                if (row >= 0 && row < n && col >= 0 && col < m && !visited[row][col] && image[row][col] == originalColor) {
-                    q.push({row, col});
-                    visited[row][col] = true; // Mark this cell as visited
-                }
-            }
-        }
-
-        return image;
+        
+        // Start DFS from the given coordinates (sr, sc)
+        dfs(sr, sc, ans, image, color, drow, dcol, startColor);
+        
+        return ans; // Return the modified image
     }
 };
