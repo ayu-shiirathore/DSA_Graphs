@@ -2,16 +2,16 @@ class Solution {
 public:
     long long maximumTripletValue(vector<int>& nums) {
         long long ans = 0;
-        int n = nums.size();
-        for (int i = 0; i < n - 2; i++) {
-            for (int j = i + 1; j < n - 1; j++) {
-                for (int k = j + 1; k < n; k++) {
-                    long long res = (long long)(nums[i] - nums[j]) * nums[k]; // Fix here
-                    if (res != -1)
-                        ans = max(ans, res);
-                }
-            }
+        int maxPrefix = nums[0];
+        int maxDiff = INT_MIN;
+        
+        for (int j = 1; j < nums.size() - 1; j++) {
+            maxDiff = max(maxDiff, maxPrefix - nums[j]);
+            maxPrefix = max(maxPrefix, nums[j]);  // Update maxPrefix for next iteration
+            
+            ans = max(ans, (long long)maxDiff * nums[j + 1]);
         }
+        
         return ans;
     }
 };
