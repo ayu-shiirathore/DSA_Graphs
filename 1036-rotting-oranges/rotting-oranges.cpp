@@ -1,62 +1,48 @@
 class Solution {
 public:
     int orangesRotting(vector<vector<int>>& grid) {
-        int n = grid.size();
-        int m = grid[0].size();
+        int m = grid.size();
+        int n = grid[0].size();
+        int fresh = 0, rotten = 0;
+        queue <pair<pair<int,int>, int>> q;
+        vector<vector<int>> vis(m,vector<int> (n,-1));
 
-        queue<pair<pair<int, int>, int>> q;
-
-        // Initialize the visited array with the same size as grid
-        int vis[n][m];
-
-        // Populate the queue with all the rotten oranges and mark them as visited
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                int num = grid[i][j];
-                if (num == 2) {
-                    q.push({{i, j}, 0});  // Rotten orange with time 0
-                    vis[i][j] = 2;  // Mark it as visited (rotten)
+        for(int i=0; i<m; i++){
+            for(int j=0; j<n; j++){
+                if(grid[i][j] ==2){
+                    q.push({{i,j},0});
+                    vis[i][j] = 2;
                 }
-                else if (num == 1) {
-                    vis[i][j] = 0;  // Fresh orange, not visited
+                else if(grid[i][j]==1){
+                    fresh++;
                 }
             }
         }
 
-        int time = 0;
-        int drow[] = {-1, 0, 1, 0};
-        int dcol[] = {0, 1, 0, -1};
+        int rows[] = {-1,0,1,0};
+        int cols[] = {0,1,0,-1};
+        int time =0;
 
-        // Perform BFS
-        while (!q.empty()) {
-            int r = q.front().first.first;
-            int c = q.front().first.second;
-            int t = q.front().second;
-            time = max(time, t);  // Track the maximum time
+        while(!q.empty()){
+            auto it = q.front();
+            int r = it.first.first;
+            int c = it.first.second;
+            time = it.second;
             q.pop();
 
-            // Explore all four directions
-            for (int i = 0; i < 4; i++) {
-                int nrow = r + drow[i];
-                int ncol = c + dcol[i];
+            for(int i=0;i<4;i++){
+                int nrow = r + rows[i];
+                int ncol = c + cols[i];
 
-                // Check if the new position is valid and if the orange is fresh
-                if (nrow >= 0 && nrow < n && ncol >= 0 && ncol < m && grid[nrow][ncol] == 1 && vis[nrow][ncol] != 2) {
-                    q.push({{nrow, ncol}, t + 1});  // Push the new position with the incremented time
-                    vis[nrow][ncol] = 2;  // Mark the fresh orange as rotten
+                if(nrow>=0 && nrow<m && ncol>=0 && ncol<n && grid[nrow][ncol]==1 && vis[nrow][ncol]!=2){
+                    grid[nrow][ncol]=2;
+                    rotten++;
+                    vis[nrow][ncol]=2;
+                    q.push({{nrow,ncol},time+1});
                 }
             }
         }
 
-        // Check if there are any fresh oranges left
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (grid[i][j] == 1 && vis[i][j] != 2) {
-                    return -1;  // If a fresh orange is not visited, return -1
-                }
-            }
-        }
-
-        return time;  // Return the maximum time taken to rot all oranges
+        return rotten!=fresh?-1:time;
     }
 };
