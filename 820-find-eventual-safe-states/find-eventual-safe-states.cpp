@@ -1,41 +1,39 @@
 class Solution {
 public:
     vector<int> eventualSafeNodes(vector<vector<int>>& graph) {
-        int V = graph.size();
+        int n = graph.size();
+        vector<vector<int>> adj(n);
+        vector<int> indegree(n,0);
+        vector<int> ans;
 
-        // Create reverse adjacency list and indegree array
-        vector<vector<int>> adjRev(V);
-        vector<int> indegree(V, 0);
-    
-        // Step 1: Build the reversed graph and calculate indegree
-        for (int i = 0; i < V; ++i) {
-            for (int neighbor : graph[i]) {
-                adjRev[neighbor].push_back(i);
+        //reversing the list and calculating indegree
+        for(int i=0; i<n; i++){
+            for(auto it: graph[i]){
+                adj[it].push_back(i);
                 indegree[i]++;
             }
         }
 
         queue<int> q;
-        vector<int> safe;
-        for (int i = 0; i < V; i++) {
-            if (indegree[i] == 0)
-                q.push(i);
+        for(int i=0; i<n; i++){
+            if(indegree[i]==0)
+            q.push(i);
         }
 
-        while (!q.empty()) {
+        while(!q.empty()){
             int node = q.front();
+            ans.push_back(node);
             q.pop();
-            safe.push_back(node);
 
-            for (auto it : adjRev[node]) {
+            for(auto it: adj[node]){
                 indegree[it]--;
-                if (indegree[it] == 0)
-                    q.push(it);
+                if(indegree[it]==0)
+                q.push(it);
             }
         }
 
-        sort(safe.begin(), safe.end());
+        sort(ans.begin(),ans.end());
+        return ans;
 
-        return safe;
     }
 };
