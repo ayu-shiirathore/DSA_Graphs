@@ -20,11 +20,11 @@ public:
              
             if(i > index && candidates[i]==candidates[i-1]) continue;
 
-            if(candidates[i] <= target){
-                ds.push_back(candidates[i]);
-                helper(i+1, target-candidates[i], candidates, ds, ans);
-                ds.pop_back();
-            }
+            if(candidates[i]>target) break;
+
+            ds.push_back(candidates[i]);
+            helper(i+1, target-candidates[i], candidates, ds, ans);
+            ds.pop_back();
             
         }
     }
